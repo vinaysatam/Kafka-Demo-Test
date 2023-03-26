@@ -24,14 +24,6 @@ public class KafkaMessageConsumer {
         String key = record.key();
         byte[] value = record.value();
         convertByteArrayToObject(record);
-        /*GenericDatumReader<GenericRecord> reader = new GenericDatumReader<>(Constants.SCHEMA);
-        JsonDecoder decoder = DecoderFactory.get().jsonDecoder(Constants.SCHEMA, new String(value));
-        GenericRecord genericRecord = reader.read(null, decoder);
-        Employee employee = new Employee();
-        employee.setName(genericRecord.get("name").toString());
-        employee.setAge((Integer) genericRecord.get("age"));
-        employee.setPosition(genericRecord.get("position").toString());
-        logger.info("Received Avro message with key '{}' and value '{}' on topic '{}'", key, value, topic);*/
     }
 
     public TargetMessage convertByteArrayToObject(ConsumerRecord<String, byte[]> record){
@@ -40,7 +32,6 @@ public class KafkaMessageConsumer {
         try {
             GenericDatumReader<GenericRecord> reader = new GenericDatumReader<>(Constants.SCHEMA);
             Decoder decoder = DecoderFactory.get().binaryDecoder(value,null);
-            //JsonDecoder decoder = DecoderFactory.get().jsonDecoder(Constants.SCHEMA, new String(value));
             GenericRecord genericRecord = reader.read(null, decoder);
             TargetMessage targetMessage = TargetMessage.builder()
                     .id((Long) genericRecord.get("id"))
@@ -48,7 +39,7 @@ public class KafkaMessageConsumer {
                     .localCurrentDate(LocalDate.parse(genericRecord.get("currentDate").toString(),Constants.DATE_FORMATTER))
                     .localDateTime(LocalDateTime.parse(genericRecord.get("dateTime").toString(),Constants.DATE_TIME_FORMATTER))
                     .build();
-            System.out.println("value : "+targetMessage);
+            System.out.println("Target message from consumer value : "+targetMessage);
             return targetMessage;
         }catch (IOException e){
             throw new CustomException("failed to decrypt "+e);

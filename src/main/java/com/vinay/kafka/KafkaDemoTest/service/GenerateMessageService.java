@@ -46,6 +46,7 @@ public class GenerateMessageService {
     }
 
     private byte[] genericRecordToBypeArray(GenericRecord record) {
+        System.out.println("GenericRecord record : "+ record);
         DatumWriter<GenericRecord> writer = new SpecificDatumWriter<>(Constants.SCHEMA);
         byte[] avroByte;
         try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
